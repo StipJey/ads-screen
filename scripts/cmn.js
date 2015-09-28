@@ -60,4 +60,4 @@ define(function(){
     }
 
     return Common
-})
+});

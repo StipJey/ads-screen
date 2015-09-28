@@ -134,13 +134,14 @@ define(function() {
                 var entryPath = state.getPath();
 
                 var lMax = 0, eMax = 0;
-                for (var j in leavePath)
-                    for (var i in entryPath)
+                for (var j in leavePath) {
+                    for (var i in entryPath) {
                         if (leavePath[j] === entryPath[i]) {
                             lMax = +j + 1;
                             eMax = +i + 1;
                         }
-                ;
+                    }
+                }
                 leavePath.splice(0, lMax);
                 entryPath.splice(0, eMax);
 
@@ -159,7 +160,7 @@ define(function() {
                 stateChange = false;
                 processQueue();
             }
-        };
+        }
 
         function processQueue() {
             while (stateQueue.length > 0) {

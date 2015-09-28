@@ -75,8 +75,6 @@ define(['esm', 'wf', 'cmn', 'config'], function (EasyStateMachine, WidgetFactory
         states.order_process.entry = function (aData) {
             $(messageContainer).show();
             $(carouselContainer).show();
-            messageContainer.innerHTML = aData.item_name;
-            carouselContainer.innerHTML = '';
 
         };
 
@@ -100,14 +98,6 @@ define(['esm', 'wf', 'cmn', 'config'], function (EasyStateMachine, WidgetFactory
         states.payment.entry = function (aData) {
             $(orderItemsContainer).show();
             $(orderSumContainer).show();
-            var od = aData.order.orderDetails;
-            var os = aData.orderSum;
-            for (var id in od) {
-                for (var priceType in od[id]) {
-                    wf.ASOrderItem(od[id][priceType], orderItemsContainer);
-                }
-            }
-            wf.ASOrderSum(os, orderSumContainer);
         };
 
         states.payment.exit = function () {
@@ -117,33 +107,36 @@ define(['esm', 'wf', 'cmn', 'config'], function (EasyStateMachine, WidgetFactory
             orderSumContainer.innerHTML = '';
         };
 
+        /*
+         * functions
+         */
+        function standByShow(){
+            sm.setState('standby');
+        }
 
-        function showOrder(aData) {
-            var od = aData.order.orderDetails;
+        function closedShow(){
+            sm.setState('closed');
+        }
+
+        function orderProcessShow(aData){
+            sm.setState('order_process');
+            messageContainer.innerHTML = aData.item_name;
+            carouselContainer.innerHTML = '';
+        }
+
+        function paymentShow(aData) {
+            sm.setState('payment');
+            var od = aData.orderItems;
             var os = aData.orderSum;
             for (var id in od) {
-                for (var priceType in od[id]) {
-                    wf.ASOrderItem(od[id][priceType], orderItemsContainer);
-                }
+                wf.ASOrderItem(od[id], orderItemsContainer);
             }
             wf.ASOrderSum(os, orderSumContainer);
         }
 
-        function showItems(data) {
-            for (var item in data) {
-                wf.OrderItem(data[item]);
-            }
-        }
-
-        function showHTML(data) {
-
-        }
-
-        function showMessage(data) {
-            var msgContainer = document.getElementById('message');
-
-            wf.ASMessage(data, msgContainer);
-        }
+        /*
+         * webSocket init
+         */
 
         (function () {
             if (webSocket) {
@@ -167,16 +160,16 @@ define(['esm', 'wf', 'cmn', 'config'], function (EasyStateMachine, WidgetFactory
 
                     var data = JSON.parse(aEventData.data);
                     if (data.order) {
-                        sm.setState('payment', data);
+                        paymentShow(data.order);
                     }
                     if (data.addedItem) {
-                        sm.setState('order_process', data.addedItem);
+                        orderProcessShow(data.addedItem);
                     }
                     if (data.logoff) {
-                        sm.setState('closed');
+                        closedShow();
                     }
                     if (data.logon) {
-                        sm.setState('standby');
+                        standByShow();
                     }
                     if (data.items) {
                         sm.setState('standby', data.items);

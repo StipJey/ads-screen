@@ -23,10 +23,11 @@ define(['cmn'], function(Common) {
             var itemCount = cmn.getElement("h4", "itemCount", divEl);
 
             this.updateText = this.show = function () {
-                itemName.innerHTML = anItem.itemName;
-                itemCount.innerHTML = anItem.orderQuantity + ' '
+                itemName.innerHTML = anItem.item_name;
+                itemCount.innerHTML = anItem.quantity + ' '
                     + (anItem.measure ? anItem.measure : 'шт')
-                    + ' ' + anItem.orderSum.toFixed(2) + " р.";
+                    + ' x ' + (+anItem.price).toFixed(2) + " р."
+                    + ' = ' + (+anItem.cost).toFixed(2) + " р.";
             };
 
             this.show();
